@@ -1,0 +1,46 @@
+server.port=8084
+
+mybatis.config-location=classpath:META-INF/mybatis-config.xml
+
+spring.shardingsphere.datasource.names=ds0,ds1
+
+# 数据源
+spring.shardingsphere.datasource.ds0.type=com.alibaba.druid.pool.DruidDataSource
+spring.shardingsphere.datasource.ds0.driver-class-name=com.mysql.jdbc.Driver
+spring.shardingsphere.datasource.ds0.url=jdbc:mysql://192.168.10.111:3306/jxdd_newSys_20190701?characterEncoding=utf-8
+spring.shardingsphere.datasource.ds0.username=root
+spring.shardingsphere.datasource.ds0.password=root
+
+spring.shardingsphere.datasource.ds1.type=com.alibaba.druid.pool.DruidDataSource
+spring.shardingsphere.datasource.ds1.driver-class-name=com.mysql.jdbc.Driver
+spring.shardingsphere.datasource.ds1.url=jdbc:mysql://192.168.10.111:3306/jxdd_newSys_20190808?characterEncoding=utf-8
+spring.shardingsphere.datasource.ds1.username=root
+spring.shardingsphere.datasource.ds1.password=root
+
+# 分表配置user
+spring.shardingsphere.sharding.tables.user.actual-data-nodes=ds$->{0..1}.user_$->{0..2}
+spring.shardingsphere.sharding.tables.user.table-strategy.inline.sharding-column=userid
+spring.shardingsphere.sharding.tables.user.table-strategy.inline.algorithm-expression=user_$->{userid % 3}
+# 分库配置
+spring.shardingsphere.sharding.default-database-strategy.inline.sharding-column=userid
+spring.shardingsphere.sharding.default-database-strategy.inline.algorithm-expression=ds$->{userid % 2}
+
+
+# 分表配置order
+spring.shardingsphere.sharding.tables.order_user.actual-data-nodes=ds$->{0..1}.order_user_$->{0..2}
+spring.shardingsphere.sharding.tables.order_user.table-strategy.inline.sharding-column=userid
+spring.shardingsphere.sharding.tables.order_user.table-strategy.inline.algorithm-expression=order_user_$->{userid % 3}
+#spring.shardingsphere.sharding.tables.user.key-generator.column=id
+#spring.shardingsphere.sharding.tables.user.key-generator.type=SNOWFLAKE
+
+#设置绑定表 ,减少sql语句笛卡尔积
+spring.shardingsphere.sharding.binding‐tables[0] = user,order_user
+
+#打印 sql
+spring.shardingsphere.props.sql.show = true
+
+# 不分库分表的数据源指定
+#spring.shardingsphere.sharding.default-data-source-name=ds0
+
+# 广播表，每个节点复制一份，适用于配置类的数据
+#spring.shardingsphere.sharding.broadcast-tables=loudong
